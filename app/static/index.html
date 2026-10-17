@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI 기본법 Q&A</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @keyframes answer-in {
+    from { opacity: 0; transform: translateY(0.5rem); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .answer-in { animation: answer-in 500ms ease-out both; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-950">
+  <main class="mx-auto flex min-h-screen w-full max-w-3xl flex-col px-5 py-8 sm:px-8 sm:py-12">
+
+    <header class="flex items-center gap-3">
+      <div class="flex size-10 items-center justify-center rounded-xl bg-blue-950 text-white shadow-sm">
+        <svg aria-hidden="true" class="size-5" fill="none" viewBox="0 0 24 24">
+          <path d="M7 7.5h10M12 4v16M5.5 20h13M6.5 7.5l-3 5h6l-3-5ZM17.5 7.5l-3 5h6l-3-5Z"
+                stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" />
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-lg font-bold tracking-tight">AI 기본법 Q&amp;A</h1>
+        <p class="mt-0.5 text-xs font-medium text-slate-500">법 조문에 근거한 인공지능기본법 안내</p>
+      </div>
+    </header>
+
+    <section class="flex flex-1 flex-col pt-20 sm:pt-28">
+      <div class="mb-8">
+        <p class="text-sm font-semibold text-blue-950">인공지능기본법이 궁금하신가요?</p>
+        <h2 class="mt-2 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">무엇이든 물어보세요.</h2>
+      </div>
+
+      <form id="ask-form" class="relative">
+        <label class="sr-only" for="question">인공지능기본법 질문</label>
+        <textarea
+          id="question"
+          class="min-h-32 w-full resize-none rounded-2xl border border-slate-200 bg-white px-5 py-4 pr-5 text-base leading-7 text-slate-900 shadow-sm outline-none transition-all placeholder:text-slate-400 focus:border-blue-950 focus:ring-4 focus:ring-blue-950/5 sm:pr-36"
+          placeholder="궁금한 내용을 입력해 주세요."></textarea>
+        <button
+          id="submit-btn"
+          type="submit"
+          class="mt-3 w-full cursor-pointer rounded-xl bg-blue-950 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:scale-[1.02] hover:bg-blue-900 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60 sm:absolute sm:bottom-4 sm:right-4 sm:mt-0 sm:w-auto">
+          질문하기
+        </button>
+      </form>
+
+      <div id="examples" class="mt-4 flex flex-wrap gap-2">
+        <button class="example-btn cursor-pointer rounded-full border border-slate-200 bg-white px-3.5 py-2 text-xs font-medium text-slate-600 shadow-sm transition-all duration-200 hover:scale-[1.02] hover:border-blue-950/20 hover:bg-blue-50 hover:text-blue-950 active:scale-[0.97]">고영향 인공지능이란?</button>
+        <button class="example-btn cursor-pointer rounded-full border border-slate-200 bg-white px-3.5 py-2 text-xs font-medium text-slate-600 shadow-sm transition-all duration-200 hover:scale-[1.02] hover:border-blue-950/20 hover:bg-blue-50 hover:text-blue-950 active:scale-[0.97]">과태료는 얼마인가요?</button>
+        <button class="example-btn cursor-pointer rounded-full border border-slate-200 bg-white px-3.5 py-2 text-xs font-medium text-slate-600 shadow-sm transition-all duration-200 hover:scale-[1.02] hover:border-blue-950/20 hover:bg-blue-50 hover:text-blue-950 active:scale-[0.97]">국내대리인을 지정해야 하는 경우는?</button>
+        <button class="example-btn cursor-pointer rounded-full border border-slate-200 bg-white px-3.5 py-2 text-xs font-medium text-slate-600 shadow-sm transition-all duration-200 hover:scale-[1.02] hover:border-blue-950/20 hover:bg-blue-50 hover:text-blue-950 active:scale-[0.97]">인공지능기본법은 언제부터 시행되나요?</button>
+      </div>
+
+      <div id="loading" class="mt-12 hidden items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5 text-sm font-medium text-slate-500 shadow-sm">
+        <span class="relative flex size-2.5">
+          <span class="absolute inline-flex size-full animate-ping rounded-full bg-blue-950 opacity-30"></span>
+          <span class="relative inline-flex size-2.5 rounded-full bg-blue-950"></span>
+        </span>
+        법 조문을 검토하고 있습니다.
+      </div>
+
+      <section id="answer-section" class="mt-12 hidden">
+        <div class="mb-3 flex items-center gap-2 text-xs font-semibold text-slate-500">
+          <span class="flex size-6 items-center justify-center rounded-md bg-blue-950 text-white">AI</span>
+          답변
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-7">
+          <p id="submitted-question" class="mb-4 text-sm font-semibold text-slate-500"></p>
+          <div id="answer-text" class="space-y-3 text-[15px] leading-7 text-slate-700"></div>
+        </div>
+
+        <div id="sources-block" class="mt-8">
+          <h3 class="mb-3 text-sm font-bold text-slate-900">근거 조문</h3>
+          <div id="sources" class="space-y-2"></div>
+        </div>
+        <div id="not-grounded-notice" class="mt-8 hidden rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-4 text-sm text-slate-500">
+          질문과 관련된 조문을 찾지 못했습니다.
+        </div>
+      </section>
+    </section>
+
+    <footer class="mt-16 border-t border-slate-200 py-6 text-center text-xs text-slate-400">
+      AI의 답변은 법률 자문을 대신하지 않습니다.
+    </footer>
+  </main>
+
+  <script>
+    const form = document.getElementById("ask-form");
+    const questionEl = document.getElementById("question");
+    const submitBtn = document.getElementById("submit-btn");
+    const loadingEl = document.getElementById("loading");
+    const answerSection = document.getElementById("answer-section");
+    const submittedQuestionEl = document.getElementById("submitted-question");
+    const answerTextEl = document.getElementById("answer-text");
+    const sourcesEl = document.getElementById("sources");
+
+    // "**굵게**" 표시만 <strong>으로 바꾸고, 줄바꿈은 문단으로 나눈다
+    function renderAnswer(text) {
+      answerTextEl.innerHTML = "";
+      text.split("\n").filter((line) => line.trim()).forEach((line) => {
+        const p = document.createElement("p");
+        p.innerHTML = line.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+        answerTextEl.appendChild(p);
+      });
+    }
+
+    function renderSources(sources) {
+      sourcesEl.innerHTML = "";
+      sources.forEach((source, i) => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "overflow-hidden rounded-xl border border-slate-200 bg-white";
+
+        const button = document.createElement("button");
+        button.className = "flex w-full cursor-pointer items-center justify-between gap-4 px-4 py-4 text-left hover:bg-slate-50";
+        button.innerHTML = `
+          <span class="truncate text-sm font-semibold text-slate-700">${source.article}</span>
+          <svg class="chevron size-4 shrink-0 transition-transform duration-200" fill="none" viewBox="0 0 20 20">
+            <path d="m6 8 4 4 4-4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" />
+          </svg>`;
+
+        const panel = document.createElement("div");
+        panel.className = "grid transition-all duration-300 ease-out " + (i === 0 ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0");
+        panel.innerHTML = `<div class="overflow-hidden"><p class="border-t border-slate-100 px-4 py-4 text-sm leading-6 text-slate-600">${source.content.replace(/\n/g, "<br>")}</p></div>`;
+
+        button.addEventListener("click", () => {
+          const isOpen = panel.classList.contains("grid-rows-[1fr]");
+          panel.className = "grid transition-all duration-300 ease-out " + (isOpen ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100");
+          button.querySelector(".chevron").classList.toggle("rotate-180", !isOpen);
+        });
+
+        wrapper.appendChild(button);
+        wrapper.appendChild(panel);
+        sourcesEl.appendChild(wrapper);
+      });
+    }
+
+    async function askQuestion(question) {
+      const trimmed = question.trim();
+      if (!trimmed) return;
+
+      questionEl.value = trimmed;
+      submitBtn.disabled = true;
+      submitBtn.textContent = "답변 중";
+      loadingEl.classList.remove("hidden");
+      loadingEl.classList.add("flex");
+      answerSection.classList.add("hidden");
+
+      try {
+        const res = await fetch("/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: trimmed }),
+        });
+        const data = await res.json();
+
+        submittedQuestionEl.textContent = trimmed;
+        renderAnswer(data.answer);
+
+        // LLM이 "관련 없다"고 판단했으면 근거 조문 대신 안내 문구를 보여준다
+        document.getElementById("sources-block").classList.toggle("hidden", !data.grounded);
+        document.getElementById("not-grounded-notice").classList.toggle("hidden", data.grounded);
+        if (data.grounded) renderSources(data.sources);
+
+        loadingEl.classList.add("hidden");
+        loadingEl.classList.remove("flex");
+        answerSection.classList.remove("hidden");
+        answerSection.classList.add("answer-in");
+      } catch (err) {
+        loadingEl.classList.add("hidden");
+        loadingEl.classList.remove("flex");
+        alert("답변을 가져오지 못했습니다. 서버 상태를 확인해주세요.");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "질문하기";
+      }
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      askQuestion(questionEl.value);
+    });
+
+    questionEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        askQuestion(questionEl.value);
+      }
+    });
+
+    document.querySelectorAll(".example-btn").forEach((btn) => {
+      btn.addEventListener("click", () => askQuestion(btn.textContent));
+    });
+  </script>
+</body>
+</html>
